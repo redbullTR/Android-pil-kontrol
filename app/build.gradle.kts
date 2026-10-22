@@ -5,14 +5,30 @@ plugins {
 
 android {
     namespace = "com.huseyin.pil"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.huseyin.pil"
         minSdk = 26
-        targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        targetSdk = 36
+        versionCode = 2
+        versionName = "1.1"
+    }
+
+    signingConfigs {
+        create("release") {
+            storeFile = file("../pil-release.jks")
+            storePassword = "pilkey2026"
+            keyAlias = "pil"
+            keyPassword = "pilkey2026"
+        }
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
+        }
     }
 
     compileOptions {
