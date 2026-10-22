@@ -228,7 +228,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Akım (µA veya mA gelebilir, cihaza göre)
-        val rawCur = bm.getLongProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW)
+        val rawCur = try {
+            bm.getLongProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW)
+        } catch (e: Exception) {
+            Long.MIN_VALUE
+        }
         var mA: Double? = null
         if (rawCur != Long.MIN_VALUE && rawCur != 0L) {
             val a = if (abs(rawCur) >= 20000) abs(rawCur) / 1000.0 else abs(rawCur).toDouble()
@@ -236,7 +240,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Kapasite
-        val rawCounter = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER)
+        val rawCounter = try {
+            bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER)
+        } catch (e: Exception) {
+            Int.MIN_VALUE
+        }
         val counterMah: Double? =
             if (rawCounter != Int.MIN_VALUE && rawCounter > 0) rawCounter / 1000.0 else null
         val estFull: Double? =
@@ -259,7 +267,13 @@ class MainActivity : AppCompatActivity() {
             timeText = "Şarj tamamlandı"
         } else if (isCharging) {
             var ms = -1L
-            if (Build.VERSION.SDK_INT >= 28) ms = bm.computeChargeTimeRemaining()
+            if (Build.VERSION.SDK_INT >= 28) {
+                ms = try {
+                    bm.computeChargeTimeRemaining()
+                } catch (e: Exception) {
+                    -1L
+                }
+            }
             if (ms <= 0 && mA != null && mA > 50 && counterMah != null && estFull != null) {
                 ms = ((estFull - counterMah) / mA * 3600000).toLong()
             }
@@ -287,7 +301,12 @@ class MainActivity : AppCompatActivity() {
 
         var healthPct: Int? = null
         if (Build.VERSION.SDK_INT >= 34) {
-            val soh = bm.getIntProperty(10) // BATTERY_PROPERTY_STATE_OF_HEALTH
+            // BATTERY_PROPERTY_STATE_OF_HEALTH: bazı telefonlar BATTERY_STATS izni ister
+            val soh = try {
+                bm.getIntProperty(10)
+            } catch (e: Exception) {
+                -1
+            }
             if (soh in 1..100) healthPct = soh
         }
         if (healthPct != null) {
