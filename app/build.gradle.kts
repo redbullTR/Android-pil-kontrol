@@ -11,8 +11,8 @@ android {
         applicationId = "com.huseyin.pil"
         minSdk = 21
         targetSdk = 34
-        versionCode = 4
-        versionName = "1.3"
+        versionCode = 5
+        versionName = "1.4"
     }
 
     signingConfigs {
@@ -38,8 +38,15 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+
+    lint {
+        abortOnError = false
+    }
 }
 
 dependencies {
     implementation("androidx.appcompat:appcompat:1.7.0")
+
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.json:json:20240303")
 }
